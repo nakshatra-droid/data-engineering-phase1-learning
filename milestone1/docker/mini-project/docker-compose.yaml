@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:15
+    container_name: docker_db
+    environment:
+      POSTGRES_USER: dockeruser
+      POSTGRES_PASSWORD: dockerpass
+      POSTGRES_DB: dockerdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - docker_net
+  app:
+    build: ./app
+    container_name: docker_app
+    depends_on:
+      - db
+    networks:
+      - docker_net
+    command: ["python", "app.py"]
+
+volumes:
+  postgres_data:
+
+networks:
+  docker_net:
